@@ -3,35 +3,41 @@ class Main:
         pass
                      
     def save(self):
-        values=list(self.__dict__.values()) 
-        with open(f"{self.__class__.__name__.lower()}.csv","w") as file:
-            pass
-        
-        with open(f"{self.__class__.__name__.lower()}.csv","r") as file:
-            data=file.readlines()
-        # print(data)
+        values=list(self.__dict__.values())      
+        try:     
+            with open(f"{self.__class__.__name__.lower()}.csv","r") as file:
+                data=file.readlines()
+                
+        except FileNotFoundError:
+            with open(f"{self.__class__.__name__.lower()}.csv","w") as file:
+                keys=''
+                for i in self.__dict__.keys():
+                    keys+=i+","                 
+                # print(keys)
+                file.writelines(keys[:-1])              
+            data=[]           
         id=str(self.id)
         my_data=[i for i in data if i!="\n"]
-        # print(my_data)
+        print(my_data)
         for i in my_data:
             if id in i:      
                 print("id must be unique")
                 return
         
         string=""
+        print(values,"******")
         for i in values:
             string+=str(i) 
             string+="," 
         string=string[:-1]
+        
         with open(f"{self.__class__.__name__.lower()}.csv","a") as file:
-            file.writelines(f"\n{string}\n")
+            file.writelines(f"\n{string}")
             print("Sucessfully saved your data !!! ")
             
-        return data
+        # return data
             
-            
-            
-            
+        
         
     def delete(self):
         with open(f"{self.__class__.__name__.lower()}.csv","r") as file:
@@ -80,14 +86,33 @@ class Main:
     def get(self):
         print (self.__dict__)
         
-      
-    def get_all(self):
-        with open(f"{self.__class__.__name__.lower()}.csv","r") as file:
-            data=file.readlines()
-        newdata=[i for i in data if i!="\n"]
-        for i in newdata:
-            print(i)
+    
         
+        
+    # THIS FUNCTION IS USED TO GET ALL OBJECTS 
+    @classmethod
+    def get_all(cls):
+        
+        objects = []
+        try:
+            with open(f"{cls.__name__.lower()}.csv", "r") as file:
+                data = file.readlines()
+        except FileNotFoundError:
+           raise Exception("Make sure to save before ")
+       
+        newdata = [i for i in data if i != "\n"]
+        
+        for i in newdata:
+            values = i.strip().split(",")
+            obj = cls(*values[:])
+            objects.append(obj)
+              
+              
+        for obj in objects:
+            obj_name=(type(obj).__name__,obj.id)
+            print(obj_name)
+
+ 
 
 class Book(Main):
     def __init__(self,id,title,author):  
@@ -102,25 +127,14 @@ class Person(Main):
         self.id=id
         self.name=name
         
-p=Person(1,"ram")
-p.save()
-p.get_all()
-# p.delete()
-        
-# b=Book(2,"GoodBook","Ram1")
-# b2=Book(3,"GoodBook2","Ram22")
-# # b.save()
-# b3=Book(4,"NiceBook","Book1")
-# # b.update(2,"Baa",'1234')
-# # b3.save()
-# # b2.save()
-# # b2.update(2,"BadGirl","Ram3")
-# # # b.update(2,"asd","asdf")
-# # b2.update(3,"Hello","Hello3")
-# b.delete()
-# print(b2.title)
-# # b2.delete()
-# b3.get_all()
+
+
+b=Book(2,"GoodBook","Ram1")
+b2=Book(3,"GoodBook2","Ram22")
+b3=Book(4,"BJGG","KKSH")
+b3.update(4,"adahdahsa","axadadad")
+
+
 
 
 
